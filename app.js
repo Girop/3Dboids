@@ -10,7 +10,7 @@ const camera = new THREE.PerspectiveCamera(
     0.1,
     1000
 )
-camera.position.set(0, 0, 100)
+camera.position.set(0, 0, 300)
 camera.lookAt(0, 0, 0)
 
 const renderer = new THREE.WebGLRenderer()
@@ -20,15 +20,12 @@ document.body.appendChild(renderer.domElement)
 
 const control = new OrbitControls(camera, renderer.domElement)
 
-// lighing
-const light = new THREE.AmbientLight(0x404040)
-scene.add(light)
-
 // stuff
 const boid = new Boid(scene)
 boid.create()
+scene.add(boid.mesh)
 
-console.log(scene)
+console.log(boid)
 // event loop
 function animate() {
     requestAnimationFrame(animate)
