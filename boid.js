@@ -1,27 +1,27 @@
 import * as THREE from 'three'
 
-class Boid extends {
-    constructor(scene){
-        this.scene = scene
+class Boid{
+    constructor(scene) {
         // ADD BOX => cage around 0, 50 width
-        this.pos = new THREE.Vector3(
-            Math.floor(Math.random() * 100 - 50),
-            Math.floor(Math.random() * 100 - 50),
-            Math.floor(Math.random() * 100 - 50)
+        this.scene = scene
+        this.position = new THREE.Vector3(
+                Math.floor(Math.random() * 100 - 50),
+                Math.floor(Math.random() * 100 - 50),
+                Math.floor(Math.random() * 100 - 50)
         )
-        this.vel = new THREE.Vector3(1,0,0)
+        this.vel = new THREE.Vector3(1, 0, 0)
     }
 
-    create(){
-        const geometry = new THREE.ConeGeometry(5, 20, 32 )
-        const material = new THREE.MeshBasicMaterial({color: 0xffff00})
-        const mesh = new THREE.Mesh(geometry,material)
-        mesh.position.set(this.pos)
+    create() {
+        const geometry = new THREE.ConeGeometry(5, 20, 32)
+        const material = new THREE.MeshBasicMaterial({ color: 0xffff00 })
+        const mesh = new THREE.Mesh(geometry, material)
+        mesh.position.set(this.position)
         this.mesh = mesh
-        // this.scene.add(mesh)
+        this.scene.add(mesh)
     }
 
-    live(){
+    live() {
         this.pos.add(this.vel)
     }
 }
