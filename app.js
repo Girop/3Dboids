@@ -111,6 +111,6 @@ function animate() {
 }
 animate()
 // handle resize
-window.addEventListener('resize', () => {
-    renderer.setSize(window.innerWidth, window.innerHeight)
-})
+// window.addEventListener('resize', () => {
+//     renderer.setSize(window.innerWidth, window.innerHeight)
+// })

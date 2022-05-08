@@ -20,10 +20,13 @@ class Boid{
         this.mesh = mesh
         this.scene.add(mesh)
     }
+<<<<<<< HEAD
 
     live() {
         this.pos.add(this.vel)
     }
+=======
+>>>>>>> efcf02656565d9ab418e8f92bb372e1fc84e8675
 }
 
 export default Boid
