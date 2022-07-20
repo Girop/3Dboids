@@ -7,6 +7,7 @@ const boids = []
 const collisionForce = 0.3
 const directionForce = 0.3
 const centerForce = 0.16
+const VIEW_DISTANCE = 30
 
 const scene = new THREE.Scene()
 
@@ -41,34 +42,36 @@ class Boid {
     static boidIndex = 0
 
     constructor(scene) {
-        this.viewDistance = 30
-        this.speedLimit = 10
         this.nearby = []
         this.index = Boid.boidIndex
         Boid.boidIndex += 1
 
-        this.position = new THREE.Vector3(
-            Math.floor(Math.random() * 100 - 50),
-            Math.floor(Math.random() * 100 - 50),
-            Math.floor(Math.random() * 100 - 50)
-        )
-
         this.velocity = new THREE.Vector3().random().normalize()
-        this.acceleration = new THREE.Vector3(0,0,0)
         this.mesh = new THREE.Mesh(
             new THREE.ConeGeometry(4, 20, 32),
             new THREE.MeshBasicMaterial({ color: 0x0000aa })
         )
-        this.mesh.position.add(this.position)
+        this.mesh.position.add(
+            new THREE.Vector3(
+                this.random(),
+                this.random(),
+                this.random(),
+            )
+        )
         scene.add(this.mesh)
     }
 
+    random(){
+        return Math.floor(Math.random() * 100) - 50 
+    }
+
     nearbyCheck() {
+
         this.nearby = []
 
         for (let boid of boids) {
-            const distance = this.position.distanceTo(boid.position)
-            if (this.index != boid.index && distance < this.viewDistance) {
+            const distance = this.mesh.position.distanceTo(boid.mesh.position)
+            if (this.index != boid.index && distance < VIEW_DISTANCE) {
                 this.nearby.push(boid)
             }
         }
@@ -80,7 +83,7 @@ class Boid {
             const distance = this.position.distanceTo(boid.position)
             const boidToPosVec = new THREE.Vector3()
             boidToPosVec.copy(this.position)
-            boidToPosVec.sub(boid.position)
+            boidToPosVec.sub(boid.mesh.position)
             boidToPosVec.divideScalar(distance)
 
             collisionVector.add(boidToPosVec)
@@ -89,40 +92,35 @@ class Boid {
     }
 
     matchDirection() {
-        const directionVector = new THREE.Vector3()
+        const directionVector = new THREE.Vector3(0, 0, 0)
         this.nearby.forEach(boid => {
-            directionVector.add(boid.position)
+            directionVector.add(boid.velocity)
         })
         return directionVector.normalize().multiplyScalar(directionForce)
     }
 
     centerFlock() {
-        const avgPosition = new THREE.Vector3()
+        const avgPosition = new THREE.Vector3(0, 0, 0)
         this.nearby.forEach(boid => {
-            avgPosition.add(boid.position)
+            avgPosition.add(boid.mesh.position)
         })
-        avgPosition.divideScalar(this.nearby.length)
 
-        return avgPosition.sub(this.position).multiplyScalar(centerForce)
+        return avgPosition
+            .sub(this.mesh.position)
+            .normalize()
+            .multiplyScalar(centerForce)
     }
 
     live() {
         this.nearbyCheck()
-        // Adding flock bechaviour effects
-        // avoid collision too weak 
-        this.acceleration.add(this.avoidCollision())
-        this.acceleration.add(this.matchDirection())
-        this.acceleration.add(this.centerFlock())
-        // movement of boid
-        this.velocity.add(this.acceleration)
-        this.velocity.clampLength(0,3)
-        this.position.add(this.velocity)
-        this.acceleration.multiplyScalar(0)
-        // graphical stuff
-        this.mesh.position.add(this.velocity)
-        // where to lookAt ? velocity / acceleration / or something  better ?
-        // this.mesh.lookAt()
+        let acceleration = new THREE.Vector3(0, 0, 0)
+        // acceleration += acceleration.add(this.centerFlock())
+        // acceleration += acceleration.add(this.matchDirection())
+        // acceleration += acceleration.add(this.avoidCollision())
 
+        this.velocity.add(acceleration)
+        this.mesh.position.add(this.velocity)
+        // this.mesh.lookAt(this.velocity)
     }
 }
 
